@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone the Flask repository
-RUN git clone https://github.com/pallets/flask /tmp/flask
+RUN git clone https://github.com/sneh-create/flask.git /tmp/flask
 
 # Set the working directory to the Flask tutorial example
 WORKDIR /tmp/flask/examples/tutorial
