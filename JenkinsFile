@@ -1,0 +1,35 @@
+pipeline{
+    agent any
+    stages{
+        stage("code clone"){
+            steps{
+                git url: "https://github.com/sneh-create/flask.git", branch: "main"
+            }
+        }
+        stage("docker build image"){
+            steps{
+                sh "whoami"
+                sh "docker build -t flaskapp ."
+            }
+        }
+        stage("dockerhub image push"){
+            steps{
+                withCredentials([usernamePassword(credentialsId:"dockerhubcred",
+                passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                    sh "docker tag flaskapp ${env.dockerHubUser}/flaskapp:latest"
+                    sh "docker push ${env.dockerHubUser}/flaskapp:latest" 
+                }
+            }
+        }
+        stage("docker run"){
+            steps{
+                withCredentials([usernamePassword(credentialsId:"dockerhubcred",
+                passwordVariable:"dockerHubPass",
+                usernameVariable:"dockerHubUser")]){
+                    sh "docker run -d -p 5000:5000 ${env.dockerHubUser}/flaskapp:latest" 
+                }
+            }
+        }
+    }
+}
